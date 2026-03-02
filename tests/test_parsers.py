@@ -122,3 +122,27 @@ def test_txt_parser_empty_file():
         assert metadata['total_length'] == 0
     finally:
         os.unlink(temp_file)
+
+def test_parser_factory():
+    """Test parser factory returns correct parser instances"""
+    txt_parser = ParserFactory.get_parser('.txt')
+    assert txt_parser.__class__.__name__ == 'TxtParser'
+
+    epub_parser = ParserFactory.get_parser('.epub')
+    assert epub_parser.__class__.__name__ == 'EpubParser'
+
+    mobi_parser = ParserFactory.get_parser('.mobi')
+    assert mobi_parser.__class__.__name__ == 'Mobiparser'
+
+def test_factory_unsupported_format():
+    """Test factory handles unsupported formats correctly"""
+    with pytest.raises(ValueError):
+        ParserFactory.get_parser('.pdf')
+
+def test_factory_case_insensitive():
+    """Test factory is case insensitive for file extensions"""
+    txt_parser = ParserFactory.get_parser('.TXT')
+    assert txt_parser.__class__.__name__ == 'TxtParser'
+    
+    epub_parser = ParserFactory.get_parser('.Epub')
+    assert epub_parser.__class__.__name__ == 'EpubParser'
