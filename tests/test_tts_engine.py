@@ -38,7 +38,7 @@ def test_audio_processor_split_text():
     processor = AudioProcessor()
     text = "This is a test text that should be split into segments."
     segments = processor.split_text_by_length(text, segment_length=10)
-    assert len(segments) == 5
+    assert len(segments) == 6
     assert len(segments[0]) <= 10
     assert len(segments[-1]) <= 10
 

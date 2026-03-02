@@ -1,12 +1,22 @@
-from mobi import Mobi
 from typing import Tuple, Dict
 
 class Mobiparser:
     def __init__(self):
         self.supported_formats = ['mobi']
+        try:
+            from mobi import Mobi
+            self.Mobi = Mobi
+        except ImportError:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning("mobi library not installed. MOBI parsing disabled.")
+            self.Mobi = None
 
     def parse(self, file_path: str) -> Tuple[str, Dict]:
-        mobi = Mobi(file_path)
+        if self.Mobi is None:
+            raise ImportError("mobi library not installed. Install with: pip install mobi")
+        
+        mobi = self.Mobi(file_path)
         content = mobi.text
         
         metadata = {

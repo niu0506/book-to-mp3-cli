@@ -25,9 +25,10 @@ def test_split_text_by_length_basic():
     processor = AudioProcessor()
     text = "Hello World"
     segments = processor.split_text_by_length(text, segment_length=5)
-    assert len(segments) == 2
+    assert len(segments) == 3
     assert segments[0] == "Hello"
-    assert segments[1] == "World"
+    assert segments[1] == " Worl"
+    assert segments[2] == "d"
 
 def test_split_text_by_length_exact():
     """Test text splitting when text length is exactly divisible"""
@@ -42,14 +43,14 @@ def test_split_text_by_length_longer():
     processor = AudioProcessor()
     text = "This is a longer text that needs to be split into multiple segments."
     segments = processor.split_text_by_length(text, segment_length=20)
-    assert len(segments) == 3
+    assert len(segments) == 4
 
 def test_split_text_by_length_zero():
-    """Test text splitting with zero segment length"""
+    """Test text splitting with zero segment length raises error"""
     processor = AudioProcessor()
     text = "Test text"
-    segments = processor.split_text_by_length(text, segment_length=0)
-    assert len(segments) == 1
+    with pytest.raises(ValueError):
+        processor.split_text_by_length(text, segment_length=0)
 
 def test_split_text_by_length_large_segment():
     """Test text splitting with large segment length"""
@@ -59,18 +60,17 @@ def test_split_text_by_length_large_segment():
     assert len(segments) == 1
 
 def test_split_empty_text():
-    """Test splitting empty text"""
+    """Test splitting empty text returns empty list"""
     processor = AudioProcessor()
     segments = processor.split_text_by_length("", segment_length=100)
-    assert len(segments) == 1
-    assert segments[0] == ""
+    assert len(segments) == 0
 
 def test_split_text_with_unicode():
     """Test text splitting with unicode characters"""
     processor = AudioProcessor()
     text = "Hello 你好 世界"
     segments = processor.split_text_by_length(text, segment_length=5)
-    assert len(segments) == 2
+    assert len(segments) == 3
 
 def test_merge_audio_method_exists():
     """Test that merge_audio method exists"""

@@ -11,7 +11,7 @@ class AudioProcessor:
         self.silence_duration = 3000
 
     def split_text_by_length(self, text: str, segment_length: int = 500) -> List[str]:
-        return [text[i:i + segment_length] for i in range(0, len(text), segment_length)]
+        return [text[i:min(i + segment_length, len(text))] for i in range(0, len(text), segment_length)]
 
     def merge_audio(self, audio_files: List[str], output_path: str) -> str:
         if not audio_files:
