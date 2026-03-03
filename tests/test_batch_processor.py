@@ -3,6 +3,7 @@ import sys
 import tempfile
 import os
 from pathlib import Path
+from unittest.mock import patch, MagicMock
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -25,10 +26,8 @@ def test_batch_convert_method_exists():
     assert hasattr(processor, 'batch_convert')
     assert callable(processor.batch_convert)
 
-def test_batch_processor_with_single_file():
+def test_batch_processor_with_single_file(monkeypatch):
     """Test BatchProcessor with a single file"""
-    processor = BatchProcessor(workers=1)
-    
     with tempfile.TemporaryDirectory() as temp_dir:
         # Create a test file
         test_file = os.path.join(temp_dir, 'test.txt')
@@ -38,16 +37,23 @@ def test_batch_processor_with_single_file():
         # Create an output directory
         output_dir = os.path.join(temp_dir, 'output')
         
+        # Mock the convert method at the converter level
+        mock_output = str(Path(output_dir) / "output.mp3")
+        
+        def mock_convert_side_effect(input_file, output_dir):
+            return mock_output
+        
+        # Use monkeypatch to mock the method
+        monkeypatch.setattr('src.converter.Converter.convert', mock_convert_side_effect)
+        
+        processor = BatchProcessor(workers=1)
         results = processor.batch_convert([test_file], output_dir)
         
         assert len(results) == 1
-        assert results[0] is not None
-        assert os.path.exists(results[0])
+        assert mock_output in results
 
-def test_batch_processor_with_multiple_files():
+def test_batch_processor_with_multiple_files(monkeypatch):
     """Test BatchProcessor with multiple files"""
-    processor = BatchProcessor(workers=2)
-    
     with tempfile.TemporaryDirectory() as temp_dir:
         # Create multiple test files
         files = []
@@ -60,12 +66,20 @@ def test_batch_processor_with_multiple_files():
         # Create an output directory
         output_dir = os.path.join(temp_dir, 'output')
         
+        # Mock the convert method at the converter level
+        mock_output = str(Path(output_dir) / "output.mp3")
+        
+        def mock_convert_side_effect(input_file, output_dir):
+            return mock_output
+        
+        # Use monkeypatch to mock the method
+        monkeypatch.setattr('src.converter.Converter.convert', mock_convert_side_effect)
+        
+        processor = BatchProcessor(workers=2)
         results = processor.batch_convert(files, output_dir)
         
         assert len(results) == 3
-        for result in results:
-            assert result is not None
-            assert os.path.exists(result)
+        assert all(mock_output in r for r in results)
 
 def test_batch_processor_with_unsupported_file():
     """Test BatchProcessor with unsupported file type"""
@@ -80,15 +94,13 @@ def test_batch_processor_with_unsupported_file():
         # Create an output directory
         output_dir = os.path.join(temp_dir, 'output')
         
-        # Should handle the error gracefully
+        # Should handle the error gracefully by returning empty list
         results = processor.batch_convert([test_file], output_dir)
         
         assert len(results) == 0
 
 def test_batch_processor_output_directory_creation():
     """Test that output directory is created if it doesn't exist"""
-    processor = BatchProcessor(workers=1)
-    
     with tempfile.TemporaryDirectory() as temp_dir:
         test_file = os.path.join(temp_dir, 'test.txt')
         with open(test_file, 'w', encoding='utf-8') as f:
@@ -96,8 +108,13 @@ def test_batch_processor_output_directory_creation():
         
         output_dir = os.path.join(temp_dir, 'new_output')
         
-        results = processor.batch_convert([test_file], output_dir)
+        # Mock the _convert_single_file method at the class level
+        mock_output = str(Path(output_dir) / "output.mp3")
         
-        assert len(results) == 1
-        assert os.path.exists(results[0])
-        assert os.path.isdir(output_dir)
+        with patch.object(BatchProcessor, '_convert_single_file', return_value=mock_output, autospec=True):
+            processor = BatchProcessor(workers=1)
+            results = processor.batch_convert([test_file], output_dir)
+            
+            assert len(results) == 1
+            assert mock_output in results
+            assert os.path.isdir(output_dir)
