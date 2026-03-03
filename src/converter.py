@@ -22,6 +22,9 @@ class Converter:
         parser = ParserFactory.get_parser(file_ext)
         text, metadata = parser.parse(input_file)
 
+        # Create output directory if it doesn't exist
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+
         audio_processor = AudioProcessor(bitrate=self.bitrate)
         tts_engine = TtsEngine(voice=self.voice)
 

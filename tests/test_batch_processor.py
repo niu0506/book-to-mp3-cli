@@ -62,24 +62,25 @@ def test_batch_processor_with_multiple_files(monkeypatch):
             with open(test_file, 'w', encoding='utf-8') as f:
                 f.write(f"Test content {i}.")
             files.append(test_file)
-        
+
         # Create an output directory
         output_dir = os.path.join(temp_dir, 'output')
-        
-        # Mock the convert method at the converter level
-        mock_output = str(Path(output_dir) / "output.mp3")
-        
+
+        # Mock the convert method to return unique outputs for each file
+        outputs = []
         def mock_convert_side_effect(input_file, output_dir):
-            return mock_output
-        
+            output = str(Path(output_dir) / f"output_{len(outputs)}.mp3")
+            outputs.append(output)
+            return output
+
         # Use monkeypatch to mock the method
         monkeypatch.setattr('src.converter.Converter.convert', mock_convert_side_effect)
-        
+
         processor = BatchProcessor(workers=2)
         results = processor.batch_convert(files, output_dir)
-        
+
         assert len(results) == 3
-        assert all(mock_output in r for r in results)
+        assert all(output in results for output in outputs)
 
 def test_batch_processor_with_unsupported_file():
     """Test BatchProcessor with unsupported file type"""
