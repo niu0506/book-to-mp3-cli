@@ -5,22 +5,30 @@ import asyncio
 from .parsers import ParserFactory
 from .tts_engine import TtsEngine
 from .audio_processor import AudioProcessor
+from .text_cleaner import TextCleaner
+
 
 class Converter:
     def __init__(
         self,
         voice: str = "zh-CN-XiaoxiaoNeural",
         bitrate: str = '192k',
-        segment_length: int = 500
+        segment_length: int = 500,
+        clean_text: bool = True
     ):
         self.voice = voice
         self.bitrate = bitrate
         self.segment_length = segment_length
+        self.clean_text = clean_text
+        self.text_cleaner = TextCleaner()
 
     def convert(self, input_file: str, output_dir: str) -> str:
         file_ext = Path(input_file).suffix.lower()
         parser = ParserFactory.get_parser(file_ext)
         text, metadata = parser.parse(input_file)
+
+        if self.clean_text:
+            text = self.text_cleaner.clean(text)
 
         # Create output directory if it doesn't exist
         Path(output_dir).mkdir(parents=True, exist_ok=True)
