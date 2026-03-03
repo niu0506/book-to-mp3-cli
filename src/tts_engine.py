@@ -1,9 +1,6 @@
 from edge_tts import Communicate
 from typing import Optional
-import logging
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from .config import logger
 
 class TtsEngine:
     def __init__(self, voice: str = "zh-CN-XiaoxiaoNeural", rate: str = "+0%"):

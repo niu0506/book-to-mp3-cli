@@ -1,9 +1,6 @@
 from typing import List
 from pydub import AudioSegment
-import logging
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from .config import logger
 
 class AudioProcessor:
     def __init__(self, bitrate: str = '192k'):

@@ -1,12 +1,8 @@
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from typing import List
 from pathlib import Path
-import logging
-
 from .converter import Converter
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from .config import logger
 
 class BatchProcessor:
     def __init__(self, workers: int = 4):
