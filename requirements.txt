@@ -6,3 +6,5 @@ mutagen
 PyYAML
 pytest
 pytest-cov
+flask
+werkzeug

@@ -4,6 +4,7 @@ from pathlib import Path
 
 from .batch_processor import BatchProcessor
 from .converter import Converter
+from .web import run_server
 
 def main():
     parser = argparse.ArgumentParser(
@@ -28,6 +29,10 @@ def main():
     batch_parser.add_argument('--voice', default='zh-CN-XiaoxiaoNeural', help='语音名称')
     batch_parser.add_argument('--workers', type=int, default=4, help='并发工作进程数')
 
+    web_parser = subparsers.add_parser('web', help='启动网页界面')
+    web_parser.add_argument('--host', default='0.0.0.0', help='服务器地址')
+    web_parser.add_argument('--port', type=int, default=5000, help='服务器端口')
+
     args = parser.parse_args()
 
     if not args.command:
@@ -39,6 +44,8 @@ def main():
             convert_single_file(args)
         elif args.command == 'batch':
             convert_batch(args)
+        elif args.command == 'web':
+            run_server(host=args.host, port=args.port)
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)

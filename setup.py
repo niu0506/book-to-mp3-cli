@@ -10,6 +10,8 @@ setup(
         "edge-tts>=6.1.0",
         "chardet>=5.0.0",
         "tqdm>=4.66.0",
+        "flask>=2.0.0",
+        "werkzeug>=2.0.0",
         "pytest>=7.4.0",
         "pytest-cov>=4.1.0",
     ],
