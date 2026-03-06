@@ -1,0 +1,14 @@
+ebooklib
+requests
+pydub
+SpeechRecognition
+mutagen
+PyYAML
+pytest
+pytest-cov
+tqdm
+fastapi
+uvicorn[standard]
+websockets
+python-multipart
+aiofiles

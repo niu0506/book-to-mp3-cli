@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电子书转MP3转换器</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 电子书转MP3转换器</h1>
+            <nav>
+                <button class="nav-btn active" data-panel="single">单文件转换</button>
+                <button class="nav-btn" data-panel="batch">批量转换</button>
+                <button class="nav-btn" data-panel="history">历史记录</button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- 单文件转换面板 -->
+            <div id="single-panel" class="panel active">
+                <div class="upload-zone" id="single-upload-zone">
+                    <div class="upload-icon">📁</div>
+                    <p>拖拽文件到此处或点击上传</p>
+                    <input type="file" id="single-file-input" accept=".epub,.mobi,.txt" hidden>
+                    <p class="supported-formats">支持格式：EPUB、MOBI、TXT</p>
+                </div>
+
+                <div id="single-file-info" class="file-info hidden">
+                    <div class="file-details">
+                        <span id="single-file-name"></span>
+                        <span id="single-file-size"></span>
+                    </div>
+                    <button class="remove-btn" id="single-remove-btn">删除</button>
+                </div>
+
+                <div class="config-panel">
+                    <div class="form-group">
+                        <label>语音选择</label>
+                        <select id="voice-select">
+                            <option value="zh-CN-XiaoxiaoNeural">小晓（女声 - 中文）</option>
+                            <option value="zh-CN-YunxiNeural">云希（男声 - 中文）</option>
+                            <option value="zh-CN-YunyangNeural">云扬（男声 - 中文）</option>
+                            <option value="en-US-JennyNeural">Jenny（女声 - 英文）</option>
+                            <option value="en-US-GuyNeural">Guy（男声 - 英文）</option>
+                            <option value="ja-JP-NanamiNeural">Nanami（女声 - 日文）</option>
+                        </select>
+                        <button class="test-voice-btn" id="test-voice-btn">试听</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>比特率</label>
+                        <select id="bitrate-select">
+                            <option value="128k">128k - 标准</option>
+                            <option value="192k" selected>192k - 高质量</option>
+                            <option value="256k">256k - 很高质量</option>
+                            <option value="320k">320k - 无损</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>分段长度： <span id="segment-length-value">500</span> 字符</label>
+                        <input type="range" id="segment-length" min="100" max="1000" value="500" step="50">
+                    </div>
+
+                    <div class="form-group">
+                        <label>输出文件名</label>
+                        <input type="text" id="output-name" placeholder="book.mp3">
+                    </div>
+                </div>
+
+                <button class="convert-btn" id="single-convert-btn">开始转换</button>
+
+                <!-- 转换进度面板 -->
+                <div id="single-progress-panel" class="progress-panel hidden">
+                    <h3>转换进度</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-info">
+                        <p>进度： <span id="progress-percent">0</span>%</p>
+                        <p>段数： <span id="current-segment">0</span> / <span id="total-segments">0</span></p>
+                        <p>当前文本： <span id="current-text">--</span></p>
+                    </div>
+                </div>
+
+                <!-- 下载按钮 -->
+                <div id="single-download-panel" class="download-panel hidden">
+                    <button class="download-btn" id="single-download-btn">下载文件</button>
+                    <p id="download-file-name"></p>
+                </div>
+            </div>
+
+            <!-- 批量转换面板 -->
+            <div id="batch-panel" class="panel">
+                <div class="upload-zone" id="batch-upload-zone">
+                    <div class="upload-icon">📁</div>
+                    <p>拖拽多个文件到此处或点击上传</p>
+                    <input type="file" id="batch-file-input" accept=".epub,.mobi,.txt" multiple hidden>
+                    <p class="supported-formats">支持格式：EPUB、MOBI、TXT</p>
+                </div>
+
+                <div id="batch-file-list" class="file-list">
+                    <!-- 文件列表项将通过JavaScript动态添加 -->
+                </div>
+
+                <div class="config-panel">
+                    <div class="form-group">
+                        <label>语音选择</label>
+                        <select id="batch-voice-select">
+                            <option value="zh-CN-XiaoxiaoNeural">小晓（女声 - 中文）</option>
+                            <option value="zh-CN-YunxiNeural">云希（男声 - 中文）</option>
+                            <option value="zh-CN-YunyangNeural">云扬（男声 - 中文）</option>
+                            <option value="en-US-JennyNeural">Jenny（女声 - 英文）</option>
+                            <option value="en-US-GuyNeural">Guy（男声 - 英文）</option>
+                            <option value="ja-JP-NanamiNeural">Nanami（女声 - 日文）</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>比特率</label>
+                        <select id="batch-bitrate-select">
+                            <option value="128k">128k - 标准</option>
+                            <option value="192k" selected>192k - 高质量</option>
+                            <option value="256k">256k - 很高质量</option>
+                            <option value="320k">320k - 无损</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>分段长度： <span id="batch-segment-length-value">500</span> 字符</label>
+                        <input type="range" id="batch-segment-length" min="100" max="1000" value="500" step="50">
+                    </div>
+                </div>
+
+                <button class="convert-btn" id="batch-convert-btn">开始批量转换</button>
+
+                <!-- 批量任务队列 -->
+                <div id="batch-tasks-panel" class="tasks-panel hidden">
+                    <h3>任务队列</h3>
+                    <div id="batch-tasks-list">
+                        <!-- 任务卡片将通过JavaScript动态添加 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 历史记录面板 -->
+            <div id="history-panel" class="panel">
+                <div class="history-header">
+                    <h3>转换历史</h3>
+                    <button class="refresh-btn" id="refresh-history-btn">刷新</button>
+                    <button class="clear-btn" id="clear-history-btn">清空历史</button>
+                </div>
+
+                <div id="history-table-container">
+                    <table id="history-table">
+                        <thead>
+                            <tr>
+                                <th>文件名</th>
+                                <th>转换时间</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 历史记录将通过JavaScript动态添加 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <!-- Toast通知 -->
+        <div id="toast" class="toast hidden"></div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
